@@ -1,0 +1,6 @@
+{"order_id":1,"customer_id":101,"amount":500,"status":"SUCCESS","order_time":"2026-05-17"}
+{"order_id":2,"customer_id":102,"amount":-50,"status":"FAILED","order_time":"2026-05-17"}
+{"order_id":3,"customer_id":101,"amount":200,"status":"SUCCESS","order_time":"2026-05-18"}
+{"order_id":4,"customer_id":103,"amount":700,"status":"SUCCESS","order_time":"2026-05-18"}
+{"order_id":5,"customer_id":104,"amount":300,"status":"PENDING","order_time":"2026-05-19"}
+{"order_id":5,"customer_id":104,"amount":300,"status":"PENDING","order_time":"2026-05-19"}
