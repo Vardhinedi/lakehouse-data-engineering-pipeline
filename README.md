@@ -1,11 +1,20 @@
-````md
-# Mini Lakehouse Data Pipeline with PySpark
+# End-to-End Lakehouse Data Engineering Pipeline
 
-## Overview
+## Project Overview
 
-This project demonstrates a mini end-to-end data engineering pipeline using PySpark following the Medallion (Bronze, Silver, Gold) architecture.
+This project demonstrates a complete modern data engineering pipeline built using:
 
-The pipeline ingests raw JSON order data, performs cleaning and validation, and generates analytics-ready business datasets.
+- Databricks
+- PySpark
+- Delta Lake
+- Snowflake
+- Kafka Streaming
+- Medallion Architecture
+- Data Quality Validation
+
+The pipeline ingests raw transactional JSON data, processes it through Bronze, Silver, and Gold layers, validates data quality, exports curated datasets into Snowflake, and supports both batch and streaming workloads.
+
+This project simulates a production-grade cloud data engineering workflow aligned with real-world enterprise data platforms.
 
 ---
 
@@ -16,21 +25,29 @@ Raw JSON Data
       ↓
 Bronze Layer (Raw Ingestion)
       ↓
-Silver Layer (Cleaned & Validated Data)
+Silver Layer (Cleaning & Validation)
       ↓
-Gold Layer (Business Analytics)
-````
+Gold Layer (Business Aggregations)
+      ↓
+Snowflake Data Warehouse
+      ↓
+Analytics / Reporting
+```
 
 ---
 
 # Tech Stack
 
-* Python
-* PySpark
-* Spark SQL
-* Pandas
-* CSV Storage
-* VS Code
+| Technology | Purpose |
+|---|---|
+| Databricks | Data Engineering Platform |
+| PySpark | Distributed Data Processing |
+| Delta Lake | ACID Storage Layer |
+| Snowflake | Cloud Data Warehouse |
+| Kafka | Real-Time Streaming |
+| Python | ETL Development |
+| SQL | Analytics & Validation |
+| GitHub | Version Control |
 
 ---
 
@@ -39,140 +56,170 @@ Gold Layer (Business Analytics)
 ```text
 lakehouse-pipeline/
 │
+├── configs/
+├── dashboards/
 ├── data/
-│   ├── raw/
-│   ├── bronze/
-│   ├── silver/
-│   └── gold/
-│
-├── src/
 │   ├── bronze/
 │   ├── silver/
 │   ├── gold/
+│   ├── raw/
+│   └── warehouse/
+│
+├── docs/
+├── monitoring/
+├── notebooks/
+├── reconciliation/
+├── screenshots/
+├── src/
 │   └── utils/
 │
-├── requirements.txt
+├── streaming/
 ├── README.md
+├── requirements.txt
 └── .gitignore
 ```
 
 ---
 
-# Pipeline Layers
+# Pipeline Stages
 
-## Bronze Layer
+## 1. Schema Setup
 
-### Purpose
+Creates Delta Lake storage structure and initializes the Medallion Architecture folders.
 
-Ingest raw JSON data and create structured raw datasets.
-
-### Input
-
-* orders.json
-* customers.json
-
-### Output
-
-* bronze/orders.csv
-* bronze/customers.csv
-
-### Responsibilities
-
-* Read raw JSON files
-* Create Spark DataFrames
-* Preserve raw data structure
-* Store structured raw layer
+### Key Features
+- Folder initialization
+- Delta storage preparation
+- Warehouse setup
 
 ---
 
-## Silver Layer
+## 2. Bronze Layer Pipeline
 
-### Purpose
+Loads raw JSON data into Delta Bronze tables.
 
-Clean and validate datasets for downstream analytics.
+### Key Features
+- Raw ingestion
+- Schema inference
+- Delta table creation
+- Initial storage optimization
 
-### Transformations Performed
+### Inputs
+- customers.json
+- orders.json
 
-* Remove negative transaction amounts
-* Remove duplicate order IDs
-* Convert timestamps into proper date format
-* Run reusable data quality checks
-
-### Output
-
-* silver/orders_clean.csv
-* silver/customers_clean.csv
-
-### Data Quality Checks
-
-* Negative amount validation
-* Null order ID validation
+### Outputs
+- bronze/customers
+- bronze/orders
 
 ---
 
-## Gold Layer
+## 3. Silver Layer Pipeline
 
-### Purpose
+Cleans and transforms Bronze data into validated Silver tables.
 
-Generate analytics-ready business datasets.
+### Key Features
+- Null handling
+- Deduplication
+- Invalid record filtering
+- Data type standardization
 
-### Analytics Generated
-
-* Revenue by country
-* Top customers by spending
-* Daily revenue trends
-
-### Output
-
-* revenue_by_country.csv
-* top_customers.csv
-* daily_revenue.csv
+### Outputs
+- silver/customers_clean
+- silver/orders_clean
 
 ---
 
-# Sample Analytics Output
+## 4. Gold Layer Pipeline
 
-## Revenue By Country
+Builds analytical business datasets from Silver data.
 
-| Country | Revenue |
-| ------- | ------- |
-| India   | 1400    |
-| Canada  | 300     |
+### Key Features
+- Revenue aggregation
+- Customer analytics
+- Business KPI generation
+
+### Gold Tables
+- TOP_CUSTOMERS
+- DAILY_REVENUE
+- REVENUE_BY_COUNTRY
 
 ---
+
+## 5. Snowflake Export
+
+Exports curated Gold tables into Snowflake for analytics and reporting.
+
+### Key Features
+- Snowflake integration
+- Table overwrite
+- Data warehouse loading
+
+---
+
+## 6. Kafka Streaming Pipeline
+
+Implements real-time streaming ingestion using Kafka and Structured Streaming.
+
+### Key Features
+- Streaming ingestion
+- Checkpointing
+- Incremental processing
+- Delta sink
+
+---
+
+## 7. Data Quality Checks
+
+Validates data integrity before downstream consumption.
+
+### Checks Performed
+- Null customer IDs
+- Duplicate orders
+- Negative revenue validation
+- Null amount checks
+
+### Example Output
+
+```text
+DATA QUALITY PASSED
+```
+
+---
+
+# Sample Business Metrics
 
 ## Top Customers
 
-| Customer | Total Spent |
-| -------- | ----------- |
-| Ananya   | 700         |
-| Indra    | 700         |
-| John     | 300         |
-
----
+Tracks highest spending customers across all successful transactions.
 
 ## Daily Revenue
 
-| Date       | Revenue |
-| ---------- | ------- |
-| 2026-05-17 | 500     |
-| 2026-05-18 | 900     |
-| 2026-05-19 | 300     |
+Provides aggregated revenue by transaction date.
+
+## Revenue by Country
+
+Provides geographic revenue distribution for analytics.
 
 ---
 
-# Data Quality Framework
+# Screenshots
 
-Reusable validation module implemented in:
+## Workflow Execution
 
-```text
-src/utils/quality_checks.py
-```
+![Workflow](screenshots/workflow_execution.png)
 
-Checks include:
+## Snowflake Tables
 
-* negative transaction detection
-* null order ID validation
+![Snowflake](screenshots/snowflake_tables.png)
+
+## Kafka Streaming
+
+![Kafka](screenshots/kafka_streaming.png)
+
+## Data Quality Checks
+
+![Quality](screenshots/data_quality_pass.png)
 
 ---
 
@@ -181,37 +228,13 @@ Checks include:
 ## 1. Clone Repository
 
 ```bash
-git clone <your-github-repo-url>
+git clone https://github.com/YOUR_USERNAME/lakehouse-pipeline.git
 cd lakehouse-pipeline
 ```
 
 ---
 
-## 2. Create Virtual Environment
-
-```bash
-python -m venv venv
-```
-
----
-
-## 3. Activate Virtual Environment
-
-### Windows
-
-```bash
-venv\Scripts\activate
-```
-
-### Mac/Linux
-
-```bash
-source venv/bin/activate
-```
-
----
-
-## 4. Install Dependencies
+## 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -219,51 +242,54 @@ pip install -r requirements.txt
 
 ---
 
-## 5. Run Bronze Pipeline
+## 3. Execute Pipelines
 
-```bash
-python src/bronze/bronze_pipeline.py
-```
+Run notebooks in this order:
 
----
-
-## 6. Run Silver Pipeline
-
-```bash
-python src/silver/silver_pipeline.py
-```
+1. schema_setup
+2. bronze_pipeline
+3. silver_pipeline
+4. gold_pipeline
+5. snowflake_export
+6. kafka_streaming_pipeline
+7. data_quality_checks
 
 ---
 
-## 7. Run Gold Pipeline
+# Key Data Engineering Concepts Demonstrated
 
-```bash
-python src/gold/gold_pipeline.py
-```
-
----
-
-# Key Concepts Demonstrated
-
-* ETL Pipelines
-* Medallion Architecture
-* PySpark DataFrames
-* Spark Transformations
-* Data Cleaning
-* Data Validation
-* Aggregations
-* Joins
-* Business Analytics
-* Modular Project Structure
+- Medallion Architecture
+- Batch ETL Pipelines
+- Streaming ETL Pipelines
+- Delta Lake
+- Data Quality Validation
+- Snowflake Integration
+- Workflow Orchestration
+- Distributed Processing
+- Cloud Data Warehousing
 
 ---
 
-# Future Improvements
+# Resume-Relevant Skills
 
-* Airflow orchestration
-* Parquet storage
-* Docker support
-* Spark Structured Streaming
-* Cloud deployment
-* Automated testing
+- PySpark
+- Databricks
+- Delta Lake
+- Kafka
+- Snowflake
+- SQL
+- Data Engineering
+- ETL Pipelines
+- Big Data Processing
+- Workflow Automation
 
+---
+
+# Future Enhancements
+
+- CI/CD integration
+- Airflow orchestration
+- dbt transformations
+- Real-time dashboards
+- Monitoring & alerting
+- Unity Catalog integration
